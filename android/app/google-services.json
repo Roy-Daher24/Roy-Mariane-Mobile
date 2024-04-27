@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "790427819678",
+    "project_id": "mobileproject-97bbf",
+    "storage_bucket": "mobileproject-97bbf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790427819678:android:36bd3458ac3b53afb7658f",
+        "android_client_info": {
+          "package_name": "com.example.roy_mariane_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhc2cvdxn4VQJ4MwVau06Jq2CR0nB_CWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
