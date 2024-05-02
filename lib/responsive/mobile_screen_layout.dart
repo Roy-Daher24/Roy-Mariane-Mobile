@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:roy_mariane_mobile/utils/colors.dart';
+import 'package:roy_mariane_mobile/utils/global_variable.dart';
 // import 'package:roy_mariane_mobile/utils/global_variable.dart';
 
 class MobileScreenLayout extends StatefulWidget {
@@ -40,12 +41,12 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text('This is mobile'),),
-      // body: PageView(
-      //   controller: pageController,
-      //   onPageChanged: onPageChanged,
-      //   children: homeScreenItems,
-      // ),
+      body: PageView(
+        controller: pageController,
+        onPageChanged: onPageChanged,
+        children: homeScreenItems,
+        // physics: const NeverScrollableScrollPhysics(),
+      ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
         items: <BottomNavigationBarItem>[
