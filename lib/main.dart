@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:roy_mariane_mobile/providers/user_provider.dart';
 import 'package:roy_mariane_mobile/responsive/mobile_screen_layout.dart';
-import 'package:roy_mariane_mobile/responsive/responsive_layout_screen.dart';
+import 'package:roy_mariane_mobile/responsive/responsive_layout.dart';
 import 'package:roy_mariane_mobile/responsive/web_screen_layout.dart';
 import 'package:roy_mariane_mobile/screens/login_screen.dart';
 import 'package:roy_mariane_mobile/utils/colors.dart';
@@ -25,7 +25,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

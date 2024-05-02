@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:roy_mariane_mobile/utils/colors.dart';
-// import 'package:instagram_clone_flutter/utils/global_variable.dart';
+import 'package:roy_mariane_mobile/utils/global_variable.dart';
 
 class WebScreenLayout extends StatefulWidget {
   const WebScreenLayout({Key? key}) : super(key: key);
@@ -45,12 +45,12 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        // centerTitle: false,
-        // title: SvgPicture.asset(
-        //   'assets/ic_instagram.svg',
-        //   color: primaryColor,
-        //   height: 32,
-        // ),
+        centerTitle: false,
+        title: SvgPicture.asset(
+          'assets/ic_instagram.svg',
+          color: primaryColor,
+          height: 32,
+        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -88,14 +88,13 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
             onPressed: () => navigationTapped(4),
           ),
         ],
-      ),body: Center(child: Text('This is web'),),
-      // body: PageView(
-      //   physics: const NeverScrollableScrollPhysics(),
-      //   controller: pageController,
-      //   onPageChanged: onPageChanged,
-      //   // children: homeScreenItems,
-      // ),
-
+      ),
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: pageController,
+        onPageChanged: onPageChanged,
+        children: homeScreenItems,
+      ),
     );
   }
 }

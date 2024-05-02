@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 webScreenLayout: WebScreenLayout(),
               ),
             ),
-                (route) => false);
+            (route) => false);
 
         setState(() {
           _isLoading = false;
@@ -66,7 +66,10 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: MediaQuery.of(context).size.width > webScreenSize
+              ? EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width / 3)
+              : const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -114,11 +117,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: !_isLoading
                       ? const Text(
-                    'Log in',
-                  )
+                          'Log in',
+                        )
                       : const CircularProgressIndicator(
-                    color: primaryColor,
-                  ),
+                          color: primaryColor,
+                        ),
                 ),
               ),
               const SizedBox(
@@ -134,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: const Text(
-                      'Dont have an account? ',
+                      'Dont have an account?',
                     ),
                   ),
                   GestureDetector(
