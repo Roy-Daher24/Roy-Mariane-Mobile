@@ -27,9 +27,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   List<String> skillsList = [
-    'Option 1',
-    'Option 2',
-    'Option 3',
+    'C++',
+    'Flutter',
+    'Java',
     // Add more options as needed
   ];
   List<String> selectedSkills=[];
