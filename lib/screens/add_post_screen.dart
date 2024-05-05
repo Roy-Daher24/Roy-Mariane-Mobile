@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:roy_mariane_mobile/providers/user_provider.dart';
 import 'package:roy_mariane_mobile/resources/firestore_methods.dart';
+import 'package:roy_mariane_mobile/screens/feed_screen.dart';
 import 'package:roy_mariane_mobile/utils/colors.dart';
 import 'package:roy_mariane_mobile/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +20,15 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   bool isLoading = false;
+  bool _dialogCancelled = false;
   final TextEditingController _descriptionController = TextEditingController();
 
-  _selectImage(BuildContext parentContext) async {
-    return showDialog(
+  @override
+  void _selectImage(BuildContext parentContext) async {
+    if (_dialogCancelled) {
+      _dialogCancelled = false;
+    }
+    Uint8List? file = await showDialog(
       context: parentContext,
       builder: (BuildContext context) {
         return SimpleDialog(
@@ -33,9 +40,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 onPressed: () async {
                   Navigator.pop(context);
                   Uint8List file = await pickImage(ImageSource.camera);
-                  setState(() {
-                    _file = file;
-                  });
+                  _updateFile(file);
                 }),
             SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
@@ -43,21 +48,38 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   Uint8List file = await pickImage(ImageSource.gallery);
-                  setState(() {
-                    _file = file;
-                  });
+                  if (file != null) {
+                    _updateFile(file);
+                  } else {
+                    _dialogCancelled = true;
+                  }
                 }),
-            SimpleDialogOption(
-              padding: const EdgeInsets.all(20),
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
+            // SimpleDialogOption(
+            //   padding: const EdgeInsets.all(20),
+            //   child: const Text("Cancel"),
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => FeedScreen()),
+            //     );
+            //   },
+            // )
           ],
         );
       },
     );
+    if (file != null && !_dialogCancelled) {
+      _updateFile(file);
+    } else if (_dialogCancelled) {
+      // Call _selectImage again if the dialog was cancelled
+      _selectImage(context);
+    }
+  }
+
+  void _updateFile(Uint8List file) {
+    setState(() {
+      _file = file;
+    });
   }
 
   void postImage(String uid, String username, String profImage) async {
@@ -74,6 +96,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
         username,
         profImage,
       );
+
+      await FireStoreMethods().incrementUserPostsCounter(uid);
+
       if (res == "success") {
         setState(() {
           isLoading = false;
@@ -104,6 +129,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void clearImage() {
     setState(() {
       _file = null;
+      _selectImage(context);
     });
   }
 
@@ -111,6 +137,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void dispose() {
     super.dispose();
     _descriptionController.dispose();
+    _selectImage(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _selectImage(context));
   }
 
   @override
@@ -118,14 +151,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
     return _file == null
-        ? Center(
-            child: IconButton(
-              icon: const Icon(
-                Icons.upload,
-              ),
-              onPressed: () => _selectImage(context),
-            ),
-          )
+        ? const SizedBox()
         : Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,

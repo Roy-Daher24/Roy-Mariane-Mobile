@@ -9,6 +9,7 @@ class User {
   final List skills;
   final List followers;
   final List following;
+  final int posts;
 
   const User(
       {required this.username,
@@ -18,7 +19,8 @@ class User {
       required this.bio,
       required this.skills,
       required this.followers,
-      required this.following});
+      required this.following,
+      required this.posts});
 
   static User fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
@@ -32,6 +34,8 @@ class User {
       skills: snapshot["skills"],
       followers: snapshot["followers"],
       following: snapshot["following"],
+      posts: snapshot["posts"],
+
     );
   }
 
@@ -44,5 +48,6 @@ class User {
         "skills": skills,
         "followers": followers,
         "following": following,
+        "posts":posts
       };
 }

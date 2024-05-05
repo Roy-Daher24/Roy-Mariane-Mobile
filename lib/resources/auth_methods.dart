@@ -54,6 +54,7 @@ class AuthMethods {
           skills: skills,
           followers: [],
           following: [],
+          posts: 0
         );
 
         // adding user in our database

@@ -124,4 +124,20 @@ class FireStoreMethods {
       if (kDebugMode) print(e.toString());
     }
   }
+  Future<void> incrementUserPostsCounter(String userId) async {
+    try {
+      // Get reference to the user document
+      DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+      // Increment the posts counter using a transaction
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot userSnapshot = await transaction.get(userRef);
+        int currentPosts = userSnapshot.get('posts') ?? 0;
+        transaction.update(userRef, {'posts': currentPosts + 1});
+      });
+    } catch (error) {
+      // Handle error
+      print('Error incrementing user posts counter: $error');
+    }
+  }
 }

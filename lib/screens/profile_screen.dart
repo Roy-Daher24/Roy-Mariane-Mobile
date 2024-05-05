@@ -7,7 +7,6 @@ import 'package:roy_mariane_mobile/resources/firestore_methods.dart';
 import 'package:roy_mariane_mobile/screens/login_screen.dart';
 import 'package:roy_mariane_mobile/utils/colors.dart';
 import 'package:roy_mariane_mobile/utils/utils.dart';
-import 'package:roy_mariane_mobile/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -20,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   var userData = {};
   int postLen = 0;
+  int currentPostLen = 0;
   int followers = 0;
   int following = 0;
   bool isFollowing = false;
@@ -41,19 +41,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .doc(widget.uid)
           .get();
 
-      // get post lENGTH
-      var postSnap = await FirebaseFirestore.instance
-          .collection('posts')
-          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
 
-      postLen = postSnap.docs.length;
+      postLen = userSnap.data()!['posts'];
       userData = userSnap.data()!;
       followers = userSnap.data()!['followers'].length;
       following = userSnap.data()!['following'].length;
       isFollowing = userSnap
           .data()!['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
+
+
       setState(() {});
     } catch (e) {
       showSnackBar(
