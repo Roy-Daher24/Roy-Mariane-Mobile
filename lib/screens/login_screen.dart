@@ -79,8 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(),
               ),
               SvgPicture.asset(
-                'assets/ic_instagram.svg',
-                color: primaryColor,
+                'assets/codergram.svg',
                 height: 64,
               ),
               const SizedBox(
@@ -113,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
-                    color: blueColor,
+                    color: purpleColor,
                   ),
                   child: !_isLoading
                       ? const Text(

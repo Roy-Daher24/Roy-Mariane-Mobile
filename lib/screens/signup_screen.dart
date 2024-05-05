@@ -98,8 +98,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Container(),
               ),
               SvgPicture.asset(
-                'assets/ic_instagram.svg',
-                color: primaryColor,
+                'assets/codergram.svg',
                 height: 64,
               ),
               const SizedBox(
@@ -111,13 +110,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       ? CircleAvatar(
                           radius: 64,
                           backgroundImage: MemoryImage(_image!),
-                          backgroundColor: Colors.red,
+                          backgroundColor: purpleColor,
                         )
                       : const CircleAvatar(
                           radius: 64,
                           backgroundImage: NetworkImage(
                               'https://i.stack.imgur.com/l60Hf.png'),
-                          backgroundColor: Colors.red,
+                          backgroundColor: purpleColor,
                         ),
                   Positioned(
                     bottom: -10,
@@ -175,7 +174,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
-                    color: blueColor,
+                    color: purpleColor,
                   ),
                   child: !_isLoading
                       ? const Text(
