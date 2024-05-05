@@ -2,6 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:roy_mariane_mobile/resources/auth_methods.dart';
 import 'package:roy_mariane_mobile/responsive/mobile_screen_layout.dart';
 import 'package:roy_mariane_mobile/responsive/responsive_layout.dart';
@@ -23,6 +26,14 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  List<String> skillsList = [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+    // Add more options as needed
+  ];
+  List<String> selectedSkills=[];
+
   bool _isLoading = false;
   Uint8List? _image;
 
@@ -46,8 +57,9 @@ class _SignupScreenState extends State<SignupScreen> {
         password: _passwordController.text,
         username: _usernameController.text,
         bio: _bioController.text,
+        skills: selectedSkills,
         file: _image!);
-    // if string returned is sucess, user has been created
+    // if string returned is success, user has been created
     if (res == "success") {
       setState(() {
         _isLoading = false;
@@ -102,7 +114,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 64,
               ),
               const SizedBox(
-                height: 64,
+                height: 30,
               ),
               Stack(
                 children: [
@@ -129,7 +141,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ],
               ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
               TextFieldInput(
                 hintText: 'Enter your username',
@@ -137,7 +149,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 textEditingController: _usernameController,
               ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
               TextFieldInput(
                 hintText: 'Enter your email',
@@ -145,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 textEditingController: _emailController,
               ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
               TextFieldInput(
                 hintText: 'Enter your password',
@@ -154,12 +166,24 @@ class _SignupScreenState extends State<SignupScreen> {
                 isPass: true,
               ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
               TextFieldInput(
                 hintText: 'Enter your bio',
                 textInputType: TextInputType.text,
                 textEditingController: _bioController,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              MultiSelectDialogField(
+                items: skillsList.map((e) => MultiSelectItem(e, e)).toList(),
+                listType: MultiSelectListType.CHIP,
+                onConfirm: (values) {
+                  selectedSkills = values;
+                },
+                selectedColor: purpleColor,
+                selectedItemsTextStyle:  TextStyle(color: primaryColor),
               ),
               const SizedBox(
                 height: 24,
