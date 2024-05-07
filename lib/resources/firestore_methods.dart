@@ -20,6 +20,7 @@ class FireStoreMethods {
         uid: uid,
         username: username,
         likes: [],
+        views: 0,
         postId: postId,
         datePublished: DateTime.now(),
         postUrl: photoUrl,

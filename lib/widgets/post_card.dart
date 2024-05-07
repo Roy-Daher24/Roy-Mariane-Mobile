@@ -277,6 +277,27 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10), // Padding for the first Row
+                  child: Row(
+                    children: <Widget>[
+                      LikeAnimation(
+                        isAnimating: widget.snap['likes'].contains(user.uid),
+                        smallLike: true,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.remove_red_eye_outlined,
+                            size: 30,
+                          ), onPressed: () {  },
+                        ),
+                      ),
+                      Text(
+                        '${widget.snap['views']}',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
