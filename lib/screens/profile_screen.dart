@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:roy_mariane_mobile/resources/auth_methods.dart';
 import 'package:roy_mariane_mobile/resources/firestore_methods.dart';
 import 'package:roy_mariane_mobile/screens/login_screen.dart';
@@ -24,7 +27,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int following = 0;
   bool isFollowing = false;
   bool isLoading = false;
-
+  List<String> skillsList = [
+    'C++',
+    'Flutter',
+    'Java',
+    // Add more options as needed
+  ];
+  List<String> selectedSkills=[];
   @override
   void initState() {
     super.initState();
@@ -41,7 +50,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .doc(widget.uid)
           .get();
 
-
       postLen = userSnap.data()!['posts'];
       userData = userSnap.data()!;
       followers = userSnap.data()!['followers'].length;
@@ -49,7 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isFollowing = userSnap
           .data()!['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
-
 
       setState(() {});
     } catch (e) {
@@ -62,6 +69,93 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = false;
     });
   }
+
+  void _handleEditProfile() {
+    TextEditingController usernameController = TextEditingController(text: userData['username']);
+    TextEditingController bioController = TextEditingController(text: userData['bio']);
+    // Assuming `selectedSkills` is a list of initially selected skills
+    List<String> selectedSkills = userData['skills'].cast<String>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Profile'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                // Add your edit fields here
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Edit Username',
+                  ),
+                ),
+                SizedBox(height: 16), // Add spacing between fields
+                TextField(
+                  controller: bioController,
+                  decoration: InputDecoration(
+                    labelText: 'Edit Bio',
+                  ),
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                MultiSelectDialogField(
+                  items: skillsList.map((e) => MultiSelectItem(e, e)).toList(),
+                  listType: MultiSelectListType.CHIP,
+                  initialValue: selectedSkills,
+                  onConfirm: (values) {
+                    selectedSkills = values;
+                  },
+                  selectedColor: purpleColor,
+                  selectedItemsTextStyle: TextStyle(color: primaryColor),
+                ),
+                SizedBox(height: 16), // Add spacing between fields
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                String updatedUsername = usernameController.text;
+                String updatedBio = bioController.text;
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(widget.uid)
+                      .update({
+                    'username': updatedUsername,
+                    'bio': updatedBio,
+                    'skills': selectedSkills,
+                  });
+                  setState(() {
+                    userData['username'] = updatedUsername;
+                    userData['bio'] = updatedBio;
+                    userData['skills'] = selectedSkills;
+                  });// Close the dialog
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  print('Error updating document: $e');
+                  // Handle error
+                }
+              },
+              child: Text('Save'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Close the dialog without saving changes
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -137,107 +231,222 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ],
                                 ),
-
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     FirebaseAuth.instance.currentUser!.uid ==
-                                        widget.uid
-                                        ?
-                                    SizedBox(
-                                      width: 150, // Set the width of the button statically
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left: 30, top: 8),
-                                        child: TextButton(
-                                          onPressed: () async {
-                                            await AuthMethods().signOut();
-                                            if (context.mounted) {
-                                              Navigator.of(context).pushReplacement(
-                                                MaterialPageRoute(
-                                                  builder: (context) => const LoginScreen(),
+                                            widget.uid
+                                        ? SizedBox(
+                                            width:
+                                                200, // Set the width of the button statically
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 30, top: 8),
+                                                  child: TextButton(
+                                                    onPressed: () async {
+                                                      await AuthMethods()
+                                                          .signOut();
+                                                      if (context.mounted) {
+                                                        Navigator.of(context)
+                                                            .pushReplacement(
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const LoginScreen(),
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                    child: Text(
+                                                      'Sign Out',
+                                                      style: TextStyle(
+                                                          color: primaryColor),
+                                                    ),
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty.all<
+                                                                  Color>(
+                                                              mobileBackgroundColor),
+                                                      shape: MaterialStateProperty
+                                                          .all<
+                                                              RoundedRectangleBorder>(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      18.0),
+                                                          side: BorderSide(
+                                                              color:
+                                                                  purpleColor),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
-                                              );
-                                            }
-                                          },
-                                          child: Text(
-                                            'Sign Out',
-                                            style: TextStyle(color: primaryColor),
-                                          ),
-                                          style: ButtonStyle(
-                                            backgroundColor: MaterialStateProperty.all<Color>(mobileBackgroundColor),
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(18.0),
-                                                side: BorderSide(color: purpleColor),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ):
-                                    FirebaseAuth.instance.currentUser!.uid == widget.uid
-                                        ? SizedBox() // Hides the Follow/Unfollow buttons if the user is signing out
-                                        : SizedBox(
-                                      width: 120, // Set the width of the button statically
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left: 30, top: 8),
-                                        child: isFollowing
-                                            ? TextButton(
-                                          onPressed: () async {
-                                            await FireStoreMethods().followUser(
-                                              FirebaseAuth.instance.currentUser!.uid,
-                                              userData['uid'],
-                                            );
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10, top: 8),
+                                                  child: TextButton(
+                                                    onPressed: _handleEditProfile,
+                                                    child: Text(
+                                                      'Edit',
+                                                      style: TextStyle(
+                                                          color: primaryColor),
+                                                    ),
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty.all<
+                                                                  Color>(
+                                                              mobileBackgroundColor),
+                                                      shape: MaterialStateProperty
+                                                          .all<
+                                                              RoundedRectangleBorder>(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      18.0),
+                                                          side: BorderSide(
+                                                              color:
+                                                                  purpleColor),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                            // child: Padding(
+                                            //   padding: const EdgeInsets.only(left: 30, top: 8),
+                                            //   child: TextButton(
+                                            //     onPressed: () async {
+                                            //       await AuthMethods().signOut();
+                                            //       if (context.mounted) {
+                                            //         Navigator.of(context).pushReplacement(
+                                            //           MaterialPageRoute(
+                                            //             builder: (context) => const LoginScreen(),
+                                            //           ),
+                                            //         );
+                                            //       }
+                                            //     },
+                                            //     child: Text(
+                                            //       'Sign Out',
+                                            //       style: TextStyle(color: primaryColor),
+                                            //     ),
+                                            //     style: ButtonStyle(
+                                            //       backgroundColor: MaterialStateProperty.all<Color>(mobileBackgroundColor),
+                                            //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                            //         RoundedRectangleBorder(
+                                            //           borderRadius: BorderRadius.circular(18.0),
+                                            //           side: BorderSide(color: purpleColor),
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //   ),
+                                            // ),
+                                            )
+                                        : FirebaseAuth.instance.currentUser!
+                                                    .uid ==
+                                                widget.uid
+                                            ? SizedBox() // Hides the Follow/Unfollow buttons if the user is signing out
+                                            : SizedBox(
+                                                width:
+                                                    120, // Set the width of the button statically
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 30, top: 8),
+                                                  child: isFollowing
+                                                      ? TextButton(
+                                                          onPressed: () async {
+                                                            await FireStoreMethods()
+                                                                .followUser(
+                                                              FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid,
+                                                              userData['uid'],
+                                                            );
 
-                                            setState(() {
-                                              isFollowing = false;
-                                              followers--;
-                                            });
-                                          },
-                                          child: Text(
-                                            'Unfollow',
-                                            style: TextStyle(color: primaryColor),
-                                          ),
-                                          style: ButtonStyle(
-                                            backgroundColor: MaterialStateProperty.all<Color>(mobileBackgroundColor),
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(18.0),
-                                                side: BorderSide(color: purpleColor),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                            : TextButton(
-                                          onPressed: () async {
-                                            await FireStoreMethods().followUser(
-                                              FirebaseAuth.instance.currentUser!.uid,
-                                              userData['uid'],
-                                            );
+                                                            setState(() {
+                                                              isFollowing =
+                                                                  false;
+                                                              followers--;
+                                                            });
+                                                          },
+                                                          child: Text(
+                                                            'Unfollow',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    primaryColor),
+                                                          ),
+                                                          style: ButtonStyle(
+                                                            backgroundColor:
+                                                                MaterialStateProperty
+                                                                    .all<Color>(
+                                                                        mobileBackgroundColor),
+                                                            shape: MaterialStateProperty
+                                                                .all<
+                                                                    RoundedRectangleBorder>(
+                                                              RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            18.0),
+                                                                side: BorderSide(
+                                                                    color:
+                                                                        purpleColor),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : TextButton(
+                                                          onPressed: () async {
+                                                            await FireStoreMethods()
+                                                                .followUser(
+                                                              FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid,
+                                                              userData['uid'],
+                                                            );
 
-                                            setState(() {
-                                              isFollowing = true;
-                                              followers++;
-                                            });
-                                          },
-                                          child: Text(
-                                            'Follow',
-                                            style: TextStyle(color: Colors.white),
-                                          ),
-                                          style: ButtonStyle(
-                                            backgroundColor: MaterialStateProperty.all<Color>(purpleColor),
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(18.0),
+                                                            setState(() {
+                                                              isFollowing =
+                                                                  true;
+                                                              followers++;
+                                                            });
+                                                          },
+                                                          child: Text(
+                                                            'Follow',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                          style: ButtonStyle(
+                                                            backgroundColor:
+                                                                MaterialStateProperty
+                                                                    .all<Color>(
+                                                                        purpleColor),
+                                                            shape: MaterialStateProperty
+                                                                .all<
+                                                                    RoundedRectangleBorder>(
+                                                              RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            18.0),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
-
                               ],
                             ),
                           ),
