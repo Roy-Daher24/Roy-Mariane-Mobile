@@ -107,8 +107,8 @@ class _SearchScreenState extends State<SearchScreen> {
           ? FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('users')
-            .where('username',
-            isGreaterThanOrEqualTo: searchController.text)
+            .where('username', isGreaterThanOrEqualTo: searchController.text)
+            .where('username', isLessThanOrEqualTo: searchController.text + '\uf8ff')
             .get(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -116,7 +116,8 @@ class _SearchScreenState extends State<SearchScreen> {
               child: CircularProgressIndicator(),
             );
           }
-          var docs = snapshot.data!.docs;
+          var docs = [];
+          docs = snapshot.data!.docs;
 
           // Filter by selected skills
           if (selectedSkills.isNotEmpty) {
